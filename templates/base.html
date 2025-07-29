@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} Habit Tracker {% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>HabitTracker 🌿</h1>
+        <p><em>Construa hábitos. Transforme sua rotina.</em></p>
+    </header>
+
+    <main>
+        {% block content %}
+        <!-- Conteúdo específico das páginas entra aqui -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {{ 2025 }} HabitTracker - Feito com Flask e café ☕</p>
+    </footer>
+</body>
+</html>
