@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - HabitTracker{% endblock %}
+
+{% block content %}
+    <section class="dashboard-header">
+        <h2 class="welcome-message">Bem-vindo(a), {{ current_user.usuario }}!</h2>
+        <p class="tagline">Aqui estão seus hábitos para transformar seu dia.</p>
+        <a href="{{ url_for('logout') }}" class="button logout-button">Sair</a>
+    </section>
+
+    <section class="habits-list">
+        <h3>Seus Hábitos Atuais:</h3>
+        {% if habitos %}
+            <div class="habits-grid">
+                {% for habito in habitos %}
+                    <div class="habit-card">
+                        <h4>{{ habito.nome }}</h4>
+                        <p>{{ habito.descricao }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-habits-message">Você ainda não tem hábitos registrados. Que tal adicionar um?</p>
+        {% endif %}
+    </section>
+
+    <section class="action-section">
+        <a href="{{ url_for('add_habit') }}" class="button add-habit-button">Adicionar ou Atualizar Hábito</a>
+    </section>
+{% endblock %}
