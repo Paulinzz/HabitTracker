@@ -4,19 +4,24 @@
 
 {% block content %}
     <section class="dashboard-header">
-        <h2 class="welcome-message">Bem-vindo(a), {{ current_user.usuario }}!</h2>
+        <h2 class="welcome-message">Bem-vindo(a), {{ current_user.username }}!</h2>
         <p class="tagline">Aqui estão seus hábitos para transformar seu dia.</p>
         <a href="{{ url_for('logout') }}" class="button logout-button">Sair</a>
     </section>
 
     <section class="habits-list">
         <h3>Seus Hábitos Atuais:</h3>
-        {% if habitos %}
+        {% if habits %}
             <div class="habits-grid">
-                {% for habito in habitos %}
+                {% for habit in habits %}
                     <div class="habit-card">
-                        <h4>{{ habito.nome }}</h4>
-                        <p>{{ habito.descricao }}</p>
+                        <h4>{{ habit.name }}</h4>
+                        <p>{{ habit.description }}</p>
+                        {# Adicione um botão de exclusão direto no card #}
+                        <form action="{{ url_for('delete_habit') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="habit_id" value="{{ habit.id }}">
+                            <button type="submit" class="btn btn-sm btn-danger mt-2">Excluir</button>
+                        </form>
                     </div>
                 {% endfor %}
             </div>
@@ -26,6 +31,76 @@
     </section>
 
     <section class="action-section">
-        <a href="{{ url_for('add_habit') }}" class="button add-habit-button">Adicionar ou Atualizar Hábito</a>
+        {# Botão para abrir o Modal de Adicionar Hábito #}
+        <button type="button" class="button add-habit-button" data-bs-toggle="modal" data-bs-target="#addHabitModal">
+            Adicionar Novo Hábito
+        </button>
+
+        {# Botão para abrir o Modal de Excluir Hábito #}
+        <button type="button" class="button delete-habit-button" data-bs-toggle="modal" data-bs-target="#deleteHabitModal">
+            Excluir Hábito (Selecionar)
+        </button>
     </section>
+
+    {# Modal para Adicionar Hábito (já existente) #}
+    <div class="modal fade" id="addHabitModal" tabindex="-1" aria-labelledby="addHabitModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addHabitModalLabel">Adicionar Novo Hábito</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="{{ url_for('add_habit') }}">
+              <div class="mb-3">
+                <label for="habit_name" class="form-label">Nome do Hábito:</label>
+                <input type="text" class="form-control" id="habit_name" name="habit_name" required>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">Descrição (Opcional):</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn btn-success">Salvar Hábito</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# NOVO Modal para Excluir Hábito #}
+    <div class="modal fade" id="deleteHabitModal" tabindex="-1" aria-labelledby="deleteHabitModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteHabitModalLabel">Excluir Hábito</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="{{ url_for('delete_habit') }}">
+              <div class="mb-3">
+                <label for="habit_to_delete" class="form-label">Selecione o Hábito para Excluir:</label>
+                <select class="form-select" id="habit_to_delete" name="habit_id" required>
+                  <option value="">-- Selecione um Hábito --</option>
+                  {% for habit in habits %}
+                    <option value="{{ habit.id }}">{{ habit.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="footer">
+        <p>&copy; 2025 HabitTracker. Todos os direitos reservados.</p>
+    </section>
+
 {% endblock %}
