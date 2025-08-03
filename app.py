@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user, LoginManager, UserMixin, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///habits.db'
@@ -70,6 +71,20 @@ def login():
         password = request.form['senha']   
         user = User.query.filter_by(username=username).first()
 
+        remember = request.form.get('remember') # Pega o valor do checkbox 'remember'
+        if remember: # Se o checkbox 'remember' estiver marcado
+            remember = True
+        else:
+            remember = False
+
+        if not user:
+            flash('Usuário não encontrado.', 'danger')
+            return redirect(url_for('login'))
+        # Se o usuário for encontrado, faz o login com a opção de lembrar
+        login_user(user, remember=remember) # Se o usuário for encontrado, faz o login com a opção de lembrar
+        
+        # Verifica se o usuário existe e se a senha está correta
+
         if user and user.check_password(password): # Chama o método check_password do modelo User
             login_user(user) 
             flash('Login realizado com sucesso!', 'success')
@@ -87,6 +102,16 @@ def register():
     if request.method == 'POST':
         username = request.form['usuario']
         password = request.form['senha']
+        rember = request.form.get('remember') # Pega o valor do checkbox 'remember'
+
+        if not username or not password:
+            flash('Por favor, preencha todos os campos.', 'danger')
+            return redirect(url_for('register'))
+        
+        # Validações simples para o nome de usuário e senha
+        if len(username) < 3 or len(password) < 6:
+            flash('O nome de usuário deve ter pelo menos 3 caracteres e a senha pelo menos 6.', 'danger')
+            return redirect(url_for('register'))
         
         existing_user = User.query.filter_by(username=username).first() # Verifica se o username já existe no modelo User
         if existing_user:
